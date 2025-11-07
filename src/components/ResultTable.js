@@ -5,7 +5,7 @@ export default function ResultTable({ keyword, user, onAdded }) {
   const [editing, setEditing] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
-  // Lấy dữ liệu từ API khi component mount
+  // 📦 Tải dữ liệu ban đầu
   React.useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
@@ -19,7 +19,7 @@ export default function ResultTable({ keyword, user, onAdded }) {
       });
   }, []);
 
-  // Lắng nghe khi thêm user mới
+  // ➕ Khi thêm người dùng mới
   React.useEffect(() => {
     if (user) {
       setUsers((prev) => [...prev, { ...user, id: prev.length + 1 }]);
@@ -27,7 +27,7 @@ export default function ResultTable({ keyword, user, onAdded }) {
     }
   }, [user, onAdded]);
 
-  // Lọc danh sách theo từ khóa
+  // 🔍 Lọc theo keyword
   const filtered = React.useMemo(() => {
     return users.filter(
       (u) =>
@@ -36,11 +36,11 @@ export default function ResultTable({ keyword, user, onAdded }) {
     );
   }, [users, keyword]);
 
-  // Hàm xóa
+  // ❌ Xoá người dùng
   const removeUser = (id) =>
     setUsers((prev) => prev.filter((u) => u.id !== id));
 
-  // Hàm sửa
+  // ✏️ Sửa người dùng
   const editUser = (u) => setEditing({ ...u, address: { ...u.address } });
 
   const handleEditChange = (field, value) => {
@@ -52,20 +52,20 @@ export default function ResultTable({ keyword, user, onAdded }) {
   };
 
   const saveUser = () => {
-    setUsers((prev) => prev.map((u) => (u.id === editing.id ? editing : u)));
+    setUsers((prev) =>
+      prev.map((u) => (u.id === editing.id ? editing : u))
+    );
     setEditing(null);
   };
 
-  // Nếu đang tải dữ liệu
   if (loading) return <div>Đang tải dữ liệu...</div>;
 
-  // ✅ RETURN phải nằm bên trong function ở đây
   return (
     <div>
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>STT</th> {/* ✅ Chỉ giữ STT, ẩn cột ID */}
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
@@ -74,9 +74,10 @@ export default function ResultTable({ keyword, user, onAdded }) {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((u) => (
+          {filtered.map((u, index) => (
             <tr key={u.id}>
-              <td>{u.id}</td>
+              <td>{index + 1}</td> {/* Số thứ tự */}
+              {/* ❌ Bỏ cột ID ở đây */}
               <td>{u.name}</td>
               <td>{u.username}</td>
               <td>{u.email}</td>
