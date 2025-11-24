@@ -11,7 +11,7 @@ export default function SearchForm({ onChangeValue }) {
   return (
     <input
       className="input"
-      placeholder="Tìm theo tên hoặc username..."
+      placeholder="Tìm theo tên..."
       value={value}
       onChange={(e) => setValue(e.target.value)}
     />

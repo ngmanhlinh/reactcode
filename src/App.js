@@ -1,31 +1,40 @@
-import logo from "./logo.svg";
-import "./App.css";
-
 import React from "react";
-import "./App.css";
 import SearchForm from "./components/SearchForm";
 import AddUser from "./components/AddUser";
 import ResultTable from "./components/ResultTable";
+import "./App.css";
 
-export default function App() {
+function App() {
   const [keyword, setKeyword] = React.useState("");
-  const [addedUser, setAddedUser] = React.useState(null);
+  const [newUser, setNewUser] = React.useState(null);
+  const [showForm, setShowForm] = React.useState(false);
 
   return (
     <div className="container">
-      <div className="header">
-        <h1>Quản lý người dùng - React CRUD</h1>
-        <p className="small">Demo CRUD sử dụng React Hooks</p>
-      </div>
-      <div className="toolbar">
-        <SearchForm onChangeValue={setKeyword} />
-        <AddUser onAdd={setAddedUser} />
-      </div>
+      <h1>React CRUD — JSONPlaceholder</h1>
+
+      <SearchForm onChangeValue={setKeyword} />
+
+      {/* Nút mở form */}
+      <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+        Thêm mới
+      </button>
+
+      {/* Hiện form khi được bật */}
+      {showForm && (
+        <AddUser
+          onAdd={(u) => setNewUser(u)}
+          onClose={() => setShowForm(false)}
+        />
+      )}
+
       <ResultTable
         keyword={keyword}
-        user={addedUser}
-        onAdded={() => setAddedUser(null)}
+        user={newUser}
+        onAdded={() => setNewUser(null)}
       />
     </div>
   );
 }
+
+export default App;

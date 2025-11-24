@@ -1,93 +1,83 @@
 import React from "react";
 
-const initial = {
-  name: "",
-  username: "",
-  email: "",
-  phone: "",
-  website: "",
-  address: { street: "", suite: "", city: "" },
-};
+export default function AddUser({ onAdd, onClose }) {
+  const [form, setForm] = React.useState({
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+  });
 
-export default function AddUser({ onAdd }) {
-  const [show, setShow] = React.useState(false);
-  const [user, setUser] = React.useState(initial);
+  const change = (f, v) => setForm({ ...form, [f]: v });
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    if (["street", "suite", "city"].includes(id)) {
-      setUser((u) => ({ ...u, address: { ...u.address, [id]: value } }));
-    } else {
-      setUser((u) => ({ ...u, [id]: value }));
+  const submit = async () => {
+    if (!form.name || !form.email) {
+      alert("Tên và Email không được để trống");
+      return;
+    }
+
+    const newUser = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      address: { city: form.city },
+    };
+
+    try {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!res.ok) throw new Error("Lỗi POST");
+
+      // Cập nhật UI
+      onAdd(newUser);
+      onClose();
+    } catch (err) {
+      alert("Không thể thêm người dùng!");
     }
   };
 
-  const handleAdd = () => {
-    if (!user.name || !user.username)
-      return alert("Vui lòng nhập Name và Username!");
-    onAdd(user);
-    setUser(initial);
-    setShow(false);
-  };
-
   return (
-    <div>
-      <button className="btn btn-primary" onClick={() => setShow(true)}>
+    <div className="add-box">
+      <h3>Thêm người dùng</h3>
+
+      <input
+        className="input"
+        placeholder="Name"
+        value={form.name}
+        onChange={(e) => change("name", e.target.value)}
+      />
+
+      <input
+        className="input"
+        placeholder="Email"
+        value={form.email}
+        onChange={(e) => change("email", e.target.value)}
+      />
+
+      <input
+        className="input"
+        placeholder="Phone"
+        value={form.phone}
+        onChange={(e) => change("phone", e.target.value)}
+      />
+
+      <input
+        className="input"
+        placeholder="City"
+        value={form.city}
+        onChange={(e) => change("city", e.target.value)}
+      />
+
+      <button className="btn btn-primary" onClick={submit}>
         Thêm
       </button>
-      {show && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Thêm người dùng</h3>
-            <input
-              id="name"
-              className="input"
-              placeholder="Name"
-              value={user.name}
-              onChange={handleChange}
-            />
-            <br />
-            <input
-              id="username"
-              className="input"
-              placeholder="Username"
-              value={user.username}
-              onChange={handleChange}
-            />
-            <br />
-            <input
-              id="email"
-              className="input"
-              placeholder="Email"
-              value={user.email}
-              onChange={handleChange}
-            />
-            <br />
-            <input
-              id="phone"
-              className="input"
-              placeholder="Phone"
-              value={user.phone}
-              onChange={handleChange}
-            />
-            <br />
-            <input
-              id="city"
-              className="input"
-              placeholder="City"
-              value={user.address.city}
-              onChange={handleChange}
-            />
-            <br />
-            <button className="btn" onClick={() => setShow(false)}>
-              Hủy
-            </button>
-            <button className="btn btn-primary" onClick={handleAdd}>
-              Lưu
-            </button>
-          </div>
-        </div>
-      )}
+      <button className="btn" onClick={onClose}>
+        Đóng
+      </button>
     </div>
   );
 }
